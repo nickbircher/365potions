@@ -24,6 +24,12 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     print(f"barrels delivered: {barrels_delivered} order_id: {order_id}")
 
+    sql_to_execute = "UPDATE global_inventory SET num_green_ml = num_green_ml + :quantity, gold = gold - :price;"
+
+    for barrel in barrels_delivered:
+        with db.engine.begin() as connection:
+            connection.execute(sqlalchemy.text(sql_to_execute), quantity=(barrel.quantity * barrel.ml_per_barrel), price=barrel.price)
+
     return "OK"
 
 # Gets called once a day
@@ -34,19 +40,20 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
     print(wholesale_catalog)
 
-    sql_to_execute = "SELECT num_green_potions FROM global_inventory"
+    sql_to_execute = "SELECT * FROM global_inventory"
 
 
     # As a very basic initial logic, purchase a new small green potion barrel only if the number of potions in inventory is less than 10.
     for barrel in wholesale_catalog:
-        if barrel.sku == "SMALL_GREEN_BARREL":
+        if barrel.potion_type == [0, 100, 0, 0]:
             with db.engine.begin() as connection:
                 result = connection.execute(sqlalchemy.text(sql_to_execute))
-                num_green_potions = result.scalar()
-            if num_green_potions < 10:
+                num_green_potions = result.fetchone()[0]
+                gold = result.fetchone()[2]
+            if num_green_potions < 10 and gold >= barrel.price:
                 return [
                     {
-                        "sku": "SMALL_GREEN_BARREL",
+                        "sku": barrel.sku,
                         "quantity": 1,
                     }
                 ]
