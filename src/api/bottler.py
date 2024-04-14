@@ -35,14 +35,17 @@ def get_bottle_plan():
     # V1 logic: bottle all barrels into green potions.
     # Always mix all available green ml if any exists.
 
-    sql_to_execute = "SELECT num_green_potions FROM global_inventory"
+    sql_to_execute = "SELECT * FROM global_inventory"
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(sql_to_execute))
+        num_green_ml = result.fetchone()[1]
+        
+    num_bottles = num_green_ml // 100
 
     return [
             {
                 "potion_type": [0, 100, 0, 0],
-                "quantity": 5,
+                "quantity": num_bottles,
             }
         ]
 
