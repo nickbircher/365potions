@@ -83,20 +83,27 @@ def post_visits(visit_id: int, customers: list[Customer]):
 
     return "OK"
 
+cart_index = 0
 
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    return {"cart_id": 1}
+    global cart_index
+    cart_index += 1
+    carts[cart_index] = {}
+    return {"cart_id": cart_index}
 
 
 class CartItem(BaseModel):
     quantity: int
 
+carts = {}
 
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ """
+    global carts
+    carts[cart_id][item_sku] = cart_item.quantity
 
     return "OK"
 
@@ -107,9 +114,22 @@ class CartCheckout(BaseModel):
 @router.post("/{cart_id}/checkout")
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
-    sql_to_execute = "UPDATE global_inventory SET num_green_potions = num_green_potions - 1, gold = gold + 50;"
+    global carts
+    cart = carts[cart_id]
+
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text(sql_to_execute))
+        for item_sku, quantity in cart.items():
+            if item_sku == "RED_POTION_0":
+                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = num_red_potions - :quantity, gold = gold + :gold;"),
+                    {"quantity": quantity, "gold": quantity * 50})
+            elif item_sku == "GREEN_POTION_0":
+                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = num_green_potions - :quantity, gold = gold + :gold;"),
+                    {"quantity": quantity, "gold": quantity * 50})
+            elif item_sku == "BLUE_POTION_0":
+                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = num_blue_potions - :quantity, gold = gold + :gold;"),
+                    {"quantity": quantity, "gold": quantity * 50})
+            else:
+                continue
 
     return {"total_potions_bought": 1, "total_gold_paid": 50}
 
