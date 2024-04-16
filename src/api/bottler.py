@@ -48,10 +48,6 @@ def get_bottle_plan():
     # green potion to add.
     # Expressed in integers from 1 to 100 that must sum up to 100.
 
-    # V1 logic: bottle all barrels into green potions.
-    # Always mix all available green ml if any exists.
-
-    sql_to_execute = "SELECT * FROM global_inventory"
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_ml, num_blue_ml, num_red_ml FROM global_inventory;"))
         num_green_ml = result.fetchone()[0]
