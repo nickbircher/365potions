@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
 from enum import Enum
@@ -109,7 +109,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     sql_to_execute = "UPDATE global_inventory SET num_green_potions = num_green_potions - 1, gold = gold + 50;"
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text(sql_to_execute))
+        connection.execute(sqlalchemy.text(sql_to_execute))
 
     return {"total_potions_bought": 1, "total_gold_paid": 50}
 

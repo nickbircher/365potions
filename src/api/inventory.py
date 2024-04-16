@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
-import math
 import sqlalchemy
 from src import database as db
 
@@ -17,7 +16,7 @@ def get_inventory():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions, num_green_ml, gold FROM global_inventory"))
         row = result.fetchone()
-        
+
         return {"number_of_potions": row[0], "ml_in_barrels": row[1], "gold": row[2]}
 
 
