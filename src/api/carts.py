@@ -86,9 +86,8 @@ def post_visits(visit_id: int, customers: list[Customer]):
 
 @router.post("/")
 def create_cart(new_cart: Customer):
-    """ """
     with db.engine.begin() as connection:
-        query = sqlalchemy.text(f"""
+        query = sqlalchemy.text("""
             INSERT INTO carts (customer_name)
             VALUES (:customer_name)
             RETURNING id;""")
@@ -103,7 +102,6 @@ class CartItem(BaseModel):
 
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
-    """ """
     with db.engine.begin() as connection:
         connection.execute(
             sqlalchemy.text(
@@ -124,7 +122,6 @@ class CartCheckout(BaseModel):
 
 @router.post("/{cart_id}/checkout")
 def checkout(cart_id: int, cart_checkout: CartCheckout):
-    """ """
     with db.engine.begin() as connection:
         cart_items = connection.execute(sqlalchemy.text(
             """

@@ -21,7 +21,6 @@ class Barrel(BaseModel):
 
 @router.post("/deliver/{order_id}")
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
-    """ """
     print(f"barrels delivered: {barrels_delivered} order_id: {order_id}")
 
     with db.engine.begin() as connection:
@@ -50,7 +49,6 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
 # and the shop returns back which barrels they'd like to purchase and how many.
 @router.post("/plan")
 def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
-    """ """
     print(wholesale_catalog)
 
     sql_to_execute = "SELECT num_red_ml, num_green_ml, num_blue_ml, gold FROM global_inventory;"
