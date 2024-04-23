@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS global_inventory;
-DROP TABLE IF EXISTS potion_catalog;
 DROP TABLE IF EXISTS carts;
 DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS potion_catalog;
 
 CREATE TABLE global_inventory (
     id INT PRIMARY KEY,
