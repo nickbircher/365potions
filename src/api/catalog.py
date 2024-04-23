@@ -13,15 +13,11 @@ def get_catalog():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT sku, name, quantity, price, potion_type from potion_catalog;")).fetchall()
 
-        catalog = [
-            {
+        catalog = [{
                 "sku": row[0],
                 "name": row[1],
                 "quantity": row[2],
                 "price": row[3],
-                "potion_type": row[4],
-            }
-            for row in result
-        ]
+                "potion_type": row[4]} for row in result]
 
     return catalog
