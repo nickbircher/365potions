@@ -5,9 +5,9 @@ DROP TABLE IF EXISTS cart_items;
 
 CREATE TABLE global_inventory (
     id INT PRIMARY KEY,
-    red_ml INT NOT NULL,
-    green_ml INT NOT NULL,
-    blue_ml INT NOT NULL,
+    num_red_ml INT NOT NULL,
+    num_green_ml INT NOT NULL,
+    num_blue_ml INT NOT NULL,
     gold INT NOT NULL
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE cart_items (
     FOREIGN KEY (sku) REFERENCES potions(sku)
 );
 
-INSERT INTO global_inventory (id, red_ml, green_ml, blue_ml, gold)
+INSERT INTO global_inventory (id, num_red_ml, num_green_ml, num_blue_ml, gold)
 VALUES (1, 0, 0, 0, 100);
 INSERT INTO potion_catalog (sku, name, quantity, price, potion_type)
 VALUES ('RED_POTION_0', 'red potion', 0, 50, ARRAY[100, 0, 0, 0]),

@@ -21,20 +21,23 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
 
     with db.engine.begin() as connection:
         for potion in potions_delivered:
-            if potion.potion_type == [100, 0, 0, 0]:
-                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = num_red_potions + :potion_quantity, num_red_ml = num_red_ml - :ml_quantity;"),
-                    {"quantity": potion.quantity})
-                
-            elif potion.potion_type == [0, 100, 0, 0]:
-                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = num_green_potions + :potion_quantity, num_green_ml = num_green_ml - :ml_quantity;"),
-                    {"quantity": potion.quantity})
-                
-            elif potion.potion_type == [0, 0, 100, 0]:
-                connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = num_blue_potions + :potion_quantity, num_blue_ml = num_blue_ml - :ml_quantity;"),
-                    {"quantity": potion.quantity})
-                
-            else:
-                continue
+            red_ml_update = potion.potion_type[0] * potion.quantity
+            green_ml_update = potion.potion_type[1] * potion.quantity
+            blue_ml_update = potion.potion_type[2] * potion.quantity
+            potion_type_array = potion.potion_type
+
+            connection.execute(
+                sqlalchemy.text(
+                    f"""
+                    UPDATE global_inventory SET
+                    num_red_ml = num_red_ml - {red_ml_update},
+                    num_green_ml = num_green_ml - {green_ml_update},
+                    num_blue_ml = num_blue_ml - {blue_ml_update};
+                    UPDATE potions SET quantity = quantity + {potion.quantity}
+                    WHERE potion_type = ARRAY{potion_type_array}::int[];
+                    """
+                ),
+            )
 
     return "OK"
 
@@ -49,31 +52,38 @@ def get_bottle_plan():
     # Expressed in integers from 1 to 100 that must sum up to 100.
 
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT num_green_ml, num_blue_ml, num_red_ml FROM global_inventory;"))
-        num_green_ml = result.fetchone()[0]
-        num_blue_ml = result.fetchone()[1]
-        num_red_ml = result.fetchone()[2]
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml, num_blue_ml, num_red_ml FROM global_inventory;")).fetchone()
+        num_green_ml = result[0]
+        num_blue_ml = result[1]
+        num_red_ml = result[2]
         response = []
 
         if num_red_ml >= 100:
             response.append(
                 {
                     "potion_type": [100, 0, 0, 0],
-                    "quantity": num_red_ml // 100,
+                    "quantity": 1,
                 }
             )
         if num_green_ml >= 100:
             response.append(
                 {
                     "potion_type": [0, 100, 0, 0],
-                    "quantity": num_green_ml // 100,
+                    "quantity": 1,
                 }
             )
         if num_blue_ml >= 100:
             response.append(
                 {
                     "potion_type": [0, 0, 100, 0],
-                    "quantity": num_blue_ml // 100,
+                    "quantity": 1,
+                }
+            )
+        if num_red_ml >= 50 and num_green_ml >= 50:
+            response.append(
+                {
+                    "potion_type": [50, 50, 0, 0],
+                    "quantity": 1,
                 }
             )
 
