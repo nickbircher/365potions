@@ -21,23 +21,24 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
 
     with db.engine.begin() as connection:
         for potion in potions_delivered:
-            red_ml_update = potion.potion_type[0] * potion.quantity
-            green_ml_update = potion.potion_type[1] * potion.quantity
-            blue_ml_update = potion.potion_type[2] * potion.quantity
-            potion_type_array = potion.potion_type
-
             connection.execute(
                 sqlalchemy.text(
-                    f"""
+                    """
                     UPDATE global_inventory SET
-                    num_red_ml = num_red_ml - {red_ml_update},
-                    num_green_ml = num_green_ml - {green_ml_update},
-                    num_blue_ml = num_blue_ml - {blue_ml_update};
-                    UPDATE potions SET quantity = quantity + {potion.quantity}
-                    WHERE potion_type = ARRAY{potion_type_array}::int[];
+                    num_red_ml = num_red_ml - :red_ml_update,
+                    num_green_ml = num_green_ml - :green_ml_update,
+                    num_blue_ml = num_blue_ml - :blue_ml_update;
+                    UPDATE potions SET quantity = quantity + :potion_quantity
+                    WHERE potion_type = ARRAY[:potion_type_array]::int[];
                     """
                 ),
-            )
+                {
+                    "red_ml_update": potion.potion_type[0] * potion.quantity,
+                    "green_ml_update": potion.potion_type[1] * potion.quantity,
+                    "blue_ml_update": potion.potion_type[2] * potion.quantity,
+                    "potion_quantity": potion.quantity,
+                    "potion_type_array": potion.potion_type,
+                })
 
     return "OK"
 

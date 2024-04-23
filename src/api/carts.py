@@ -83,21 +83,23 @@ def post_visits(visit_id: int, customers: list[Customer]):
 
     return "OK"
 
-cart_index = 0
 
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    global cart_index
-    cart_index += 1
-    carts[cart_index] = {}
-    return {"cart_id": cart_index}
+    with db.engine.begin() as connection:
+        query = sqlalchemy.text(f"""
+            INSERT INTO carts (customer_name)
+            VALUES (:customer_name)
+            RETURNING id;""")
+        result = connection.execute(query, {"customer_name": new_cart.customer_name}).fetchone()
+
+    return {"cart_id": result[0]}
 
 
 class CartItem(BaseModel):
     quantity: int
 
-carts = {}
 
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
