@@ -30,7 +30,7 @@ CREATE TABLE cart_items (
     sku TEXT NOT NULL,
     quantity INT NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
-    FOREIGN KEY (sku) REFERENCES potions(sku)
+    FOREIGN KEY (sku) REFERENCES potion_catalog(sku)
 );
 
 INSERT INTO global_inventory (id, num_red_ml, num_green_ml, num_blue_ml, gold)
