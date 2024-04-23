@@ -39,6 +39,4 @@ INSERT INTO potion_catalog (sku, name, quantity, price, potion_type)
 VALUES ('RED_POTION_0', 'red potion', 0, 50, ARRAY[100, 0, 0, 0]),
        ('GREEN_POTION_0', 'green potion', 0, 50, ARRAY[0, 100, 0, 0]),
        ('BLUE_POTION_0', 'blue potion', 0, 50, ARRAY[0, 0, 100, 0]),
-       ('YELLOW_POTION_0', 'yellow potion', 0, 50, ARRAY[50, 50, 0, 0]),
-       ('PURPLE_POTION_0', 'purple potion', 0, 50, ARRAY[50, 0, 50, 0]),
-       ('CYAN_POTION_0', 'cyan potion', 0, 50, ARRAY[0, 50, 50, 0]);
+       ('YELLOW_POTION_0', 'yellow potion', 0, 50, ARRAY[50, 50, 0, 0]);
