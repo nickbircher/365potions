@@ -12,9 +12,7 @@ def get_catalog():
     """
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT sku, name, quantity, price, potion_type from potion_catalog;"))
-        num_green_potions = result
-        num_blue_potions = result.fetchone()[1]
-        num_red_potions = result.fetchone()[2]
+        catalog = result.fetchall()
 
         catalog = []
         if num_red_potions != 0:
