@@ -16,7 +16,7 @@ def get_inventory():
         result = connection.execute(sqlalchemy.text("SELECT num_red_ml, num_green_ml, num_blue_ml, gold FROM global_inventory;"))
         inventory = result.fetchone()
 
-        number_of_potions = connection.execute(sqlalchemy.text("SELECT SUM(quantity) FROM potion_catalog WHERE quantity > 0;")).fetchone()
+        number_of_potions = connection.execute(sqlalchemy.text("SELECT SUM(quantity) FROM potion_catalog;")).fetchone()
 
     return {
         "number_of_potions": number_of_potions,
