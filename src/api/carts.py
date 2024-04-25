@@ -125,7 +125,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     with db.engine.begin() as connection:
         cart_items = connection.execute(sqlalchemy.text(
             """
-            SELECT sku, quantity from cart_items WHERE cart_id = :cart_id;
+            SELECT sku, quantity from cart_items WHERE cart_id = :cart_id AND quantity > 0;
             """
             ), {"cart_id": cart_id}).fetchall()
 
